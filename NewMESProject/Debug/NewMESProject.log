@@ -1,0 +1,8 @@
+﻿  Main.cpp
+C:\Users\Dominisia\Desktop\studia\semestr VI\MESY\NewMESProject\NewMESProject\JacobMatrix.h(5,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+C:\Users\Dominisia\Desktop\studia\semestr VI\MESY\NewMESProject\NewMESProject\Grid.h(6,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+C:\Users\Dominisia\Desktop\studia\semestr VI\MESY\NewMESProject\NewMESProject\Grid.h(50,12): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\Dominisia\Desktop\studia\semestr VI\MESY\NewMESProject\NewMESProject\Grid.h(51,12): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\Dominisia\Desktop\studia\semestr VI\MESY\NewMESProject\NewMESProject\Grid.h(93,9): warning C4101: 'a': unreferenced local variable
+C:\Users\Dominisia\Desktop\studia\semestr VI\MESY\NewMESProject\NewMESProject\Main.cpp(13,53): warning C4305: 'argument': truncation from 'double' to 'float'
+  NewMESProject.vcxproj -> C:\Users\Dominisia\Desktop\studia\semestr VI\MESY\NewMESProject\Debug\NewMESProject.exe

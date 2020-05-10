@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29409.12
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NewMESProject", "NewMESProject\NewMESProject.vcxproj", "{FCEDE0FA-3C91-4506-8029-7C7B8C57B272}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FCEDE0FA-3C91-4506-8029-7C7B8C57B272}.Debug|x64.ActiveCfg = Debug|x64
+		{FCEDE0FA-3C91-4506-8029-7C7B8C57B272}.Debug|x64.Build.0 = Debug|x64
+		{FCEDE0FA-3C91-4506-8029-7C7B8C57B272}.Debug|x86.ActiveCfg = Debug|Win32
+		{FCEDE0FA-3C91-4506-8029-7C7B8C57B272}.Debug|x86.Build.0 = Debug|Win32
+		{FCEDE0FA-3C91-4506-8029-7C7B8C57B272}.Release|x64.ActiveCfg = Release|x64
+		{FCEDE0FA-3C91-4506-8029-7C7B8C57B272}.Release|x64.Build.0 = Release|x64
+		{FCEDE0FA-3C91-4506-8029-7C7B8C57B272}.Release|x86.ActiveCfg = Release|Win32
+		{FCEDE0FA-3C91-4506-8029-7C7B8C57B272}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CDDF3596-D28F-459B-A9A3-3DC5DEFD2243}
+	EndGlobalSection
+EndGlobal
