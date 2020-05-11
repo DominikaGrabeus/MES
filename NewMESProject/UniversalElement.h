@@ -1,7 +1,6 @@
 #pragma once
 #include <math.h>
-#include "CalculationPointInUniversalElement.h"
-#include "AllMatrix.h"
+#include "MatrixH_C.h"
 
 class UniversalElement {
 public:
@@ -14,7 +13,7 @@ public:
 	Eigen::Vector4d getShapeFunctiondNdXsi();
 	Eigen::Vector4d getShapeFunctiondNdEta();
 	Eigen::Vector4d getShapeFunctionsValueN();
-	void print(int ShapeFunctionEtaOrXsiOrN);
+	void printShapeFunctions(int ShapeFunctionEtaOrXsiOrN);
 
 
 private:
@@ -82,7 +81,7 @@ Eigen::Vector4d UniversalElement::getShapeFunctionsValueN()
 {
 	return shapeFunctionValue;
 }
-void UniversalElement::print(int ShapeFunctionEtaOrXsiOrN) {
+void UniversalElement::printShapeFunctions(int ShapeFunctionEtaOrXsiOrN) {
 	for (int i= 0; i < 4; i++)
 	{
 		cout << calculatedPoints2D[i][ShapeFunctionEtaOrXsiOrN] << endl;

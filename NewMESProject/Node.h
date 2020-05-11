@@ -17,6 +17,8 @@ public:
 	void printNode();
 	float getX();
 	float getY();
+	bool getBC();
+	double getDistance(Node node);
 
 
 private:
@@ -61,4 +63,10 @@ float Node::getX() {
 float Node::getY() {
 	return y;
 
+}
+bool Node::getBC() {
+	return BC;
+}
+double Node::getDistance(Node node) {
+	return sqrt(pow((node.x) - (this->x), 2) + pow((node.y) - (this->y), 2));
 }

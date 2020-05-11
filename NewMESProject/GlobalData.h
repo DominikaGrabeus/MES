@@ -9,12 +9,13 @@ public:
 	int nE;  // liczba elementow  (mH-1)*(mW-1)
 	int nN;  // liczba wezlow mH*mW
 	double temperature;
+	double convection;
 
-	void setGlobalData(float height, float width, int nH, int nW, double temperature);
+	void setGlobalData(float height, float width, int nH, int nW, double temperature, double printconvection);
 
 };
 
-void GlobalData::setGlobalData(float height, float width, int nH, int nW, double temperature) {
+void GlobalData::setGlobalData(float height, float width, int nH, int nW, double temperature, double convection) {
 	this->height = height;
 	this->width = width;
 	this->nH = nH;
@@ -22,5 +23,6 @@ void GlobalData::setGlobalData(float height, float width, int nH, int nW, double
 	this->nE = (nH - 1) * (nW - 1);
 	this->nN = nH * nW;
 	this->temperature = temperature;
+	this->convection = convection;
 
 }

@@ -11,6 +11,7 @@
 using namespace std;
 class Grid : public GlobalData {
 public:
+	Eigen::Vector4d tmp;
 	Eigen::MatrixXd* matrixHGlobal;
 	Eigen::MatrixXd* matrixCGlobal;
 	vector<Node> nodesList;
@@ -19,7 +20,7 @@ public:
 	double ro;
 	double conductivity;
 	Element setNodesInElement(int i, int j, int nH);
-	void createGrid(float height, float width, int nH, int nW, double temperature, double cp, double ro, double conductivity);
+	void createGrid(float height, float width, int nH, int nW, double temperature, double cp, double ro, double conductivity, double convection);
 	void createNodesList(float height, float width, int nH, int nW, double temperature);
 	void createElemensList(int nH, int nW);
 	void printGrid();
@@ -27,11 +28,11 @@ public:
 	void printAgregatedMatrixHAndC();
 
 };
-void Grid::createGrid(float height, float width, int nH, int nW, double temperature, double cp, double ro, double conductivity) {
+void Grid::createGrid(float height, float width, int nH, int nW, double temperature, double cp, double ro, double conductivity,double convection) {
 	this->cp = cp;
 	this->ro = ro;
 	this->conductivity = conductivity;
-	this->GlobalData::setGlobalData(height, width, nH, nW, temperature);
+	this->GlobalData::setGlobalData(height, width, nH, nW, temperature,convection);
 	this->createNodesList(height, width, nH, nW, temperature);
 	UniversalElement::UniversalElement();
 	matrixHGlobal = new Eigen::MatrixXd(GlobalData::nN, GlobalData::nN);
@@ -39,6 +40,10 @@ void Grid::createGrid(float height, float width, int nH, int nW, double temperat
 	matrixCGlobal = new Eigen::MatrixXd(GlobalData::nN, GlobalData::nN);
 	matrixCGlobal->fill(0);
 	this->createElemensList(nH, nW);
+	for (int i = 0; i < 4; i++) {
+		tmp(i) = i;
+	}
+
 
 }
 
@@ -83,6 +88,11 @@ Element Grid::setNodesInElement(int i, int j, int nH) {
 	Element element = nodes;
 	element.elementId;
 	element.setMatrixHAndC(conductivity, cp, ro, nodes);
+	element.setMatrixHBCandVectorP(convection, temperature, nodes);
+	cout << element.matrixHBCLocal.bottomMatrix << endl;
+	cout << element.matrixHBCLocal.rightMatrix << endl;
+	cout << element.matrixHBCLocal.topMatrix << endl;
+	cout << element.matrixHBCLocal.leftMatrix << endl;
 	agregateLocalMatrixToGlobalMatrix(element);
 
 
@@ -95,12 +105,11 @@ void Grid::agregateLocalMatrixToGlobalMatrix(Element element) {
 	for (int i = 0; i < 4; i++)
 		nodesIDs[i] = element.nodes[i]->getNodeId();
 	for (int i = 0; i < 4; i++) {
+
 		for (int j = 0; j < 4; j++) {
 
-			(*matrixHGlobal)(nodesIDs[i] - 1, nodesIDs[j] - 1) += element.matrixHLocal.matrixH(i, j);
-			(*matrixCGlobal)(nodesIDs[i] - 1, nodesIDs[j] - 1) += element.matrixCLocal.matrixC(i, j);
-
-
+			(*matrixHGlobal)(nodesIDs[i] - 1, nodesIDs[j] - 1) += element.matrixHLocal.matrix(i, j);
+			(*matrixCGlobal)(nodesIDs[i] - 1, nodesIDs[j] - 1) += element.matrixCLocal.matrix(i, j);
 		}
 	}
 

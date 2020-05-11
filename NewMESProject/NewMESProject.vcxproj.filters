@@ -27,13 +27,16 @@
     <ClInclude Include="JacobMatrix.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AllMatrix.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Node.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="UniversalElement.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MatrixH_C.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MatrixHBCandVectorP.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -2,21 +2,24 @@
 #include <array>
 #include<iostream>
 #include "Node.h"
-#include "AllMatrix.h"
+#include "MatrixH_C.h"
+#include "MatrixHBCandVectorP.h"
 #include "UniversalElement.h"
 using namespace std;
 class Element {
 public:
 	int elementId;
 	array<Node*, 4> nodes;
-	AllMatrix matrixHLocal;
-	AllMatrix matrixCLocal;
+	MatrixH_C matrixHLocal;
+	MatrixH_C matrixCLocal;
+	MatrixHBCandVectorP matrixHBCLocal;
 	Element();
 	Element(array<Node*, 4> Nodes);
 	void setElementId(int id);
 	void printElement();
 	int getElementId();
 	void setMatrixHAndC(double k, double cp, double ro, array<Node*, 4> Nodes);
+	void setMatrixHBCandVectorP(double convection, double temperature, array<Node*, 4> Nodes);
 };
 
 Element::Element() {
@@ -45,6 +48,9 @@ void Element::setMatrixHAndC(double k, double cp, double ro, array<Node*, 4> nod
 {
 	matrixHLocal.calculateMatrixH(k, nodes);
 	matrixCLocal.calculateMatrixC(cp, ro, nodes);
-	matrixHLocal.printMatrixH();
-	matrixCLocal.printMatrixC();
+	//matrixHLocal.printMatrixH();
+	//matrixCLocal.printMatrixC();
+}
+void Element::setMatrixHBCandVectorP(double convection, double temperature, array<Node*, 4> Nodes) {
+	matrixHBCLocal.calculateMatrixHBCandVectorP(convection, temperature, Nodes);
 }
