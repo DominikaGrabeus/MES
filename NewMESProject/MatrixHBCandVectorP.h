@@ -6,34 +6,22 @@
 
 class MatrixHBCandVectorP {
 public:
-	Eigen::Vector4d bottomVector;
-	Eigen::Vector4d rightVector;
-	Eigen::Vector4d topVector;
-	Eigen::Vector4d leftVector;
-	Eigen::Matrix4d bottomMatrix;
-	Eigen::Matrix4d rightMatrix;
-	Eigen::Matrix4d topMatrix;
-	Eigen::Matrix4d leftMatrix;
+	Eigen::Vector4d vectorP;
+	Eigen::Matrix4d matrixHBCLocal;
 	double xsi1, eta1, xsi2, eta2;
 
 	void calculateMatrixHBCandVectorP(double convection, double temperature, array<Node*, 4> nodes);
 
 private:
 	Eigen::Matrix4d calculateMatrixInProperSide(double eta1, double eta2, double xsi1, double xsi2);
+	Eigen::Vector4d calculateVectorInProperSide(double eta1, double eta2, double xsi1, double xsi2);
 	double calculateDeterminant(Node node1, Node node2);
 	Eigen::Vector4d calculateShapeFunction1dInMatrixHBC(double eta, double xsi);
 };
 
  void MatrixHBCandVectorP::calculateMatrixHBCandVectorP(double convection, double temperature, array<Node*, 4> nodes) {
-	
-	 bottomMatrix.fill(0);
-	 rightMatrix.fill(0);
-	 topMatrix.fill(0);
-	 leftMatrix.fill(0);
-	 bottomVector.fill(0);
-	 rightVector.fill(0);
-	 topVector.fill(0);
-	 leftVector.fill(0);
+	 matrixHBCLocal.fill(0);
+	 vectorP.fill(0);
 
 	 if ((nodes[0]->getBC()) && (nodes[1]->getBC())) {
 		 eta1 = -1;
@@ -41,7 +29,8 @@ private:
 		 xsi1 = -1 / sqrt(3);
 		 xsi2 = 1 / sqrt(3);
 		 double detJ = calculateDeterminant(*nodes[0], *nodes[1]);
-		 bottomMatrix = calculateMatrixInProperSide(eta1, eta2, xsi1, xsi2) * convection * detJ;
+		 matrixHBCLocal += calculateMatrixInProperSide(eta1, eta2, xsi1, xsi2) * convection * detJ;
+		 vectorP += -calculateVectorInProperSide(eta1, eta2, xsi1, xsi2) * convection * temperature * detJ;
 	 }
 	 if ((nodes[1]->getBC()) && (nodes[2]->getBC())) {
 		 eta1 = -1 / sqrt(3);
@@ -49,7 +38,8 @@ private:
 		 xsi1 = 1;
 		 xsi2 = 1;
 		 double detJ = calculateDeterminant(*nodes[1], *nodes[2]);
-		 rightMatrix = calculateMatrixInProperSide(eta1, eta2, xsi1, xsi2) * convection * detJ;
+		 matrixHBCLocal += calculateMatrixInProperSide(eta1, eta2, xsi1, xsi2) * convection * detJ;
+		 vectorP += -calculateVectorInProperSide(eta1, eta2, xsi1, xsi2) * convection * temperature * detJ;
 	 }
 	 if ((nodes[2]->getBC()) && (nodes[3]->getBC())) {
 		 eta1 = 1;
@@ -57,7 +47,8 @@ private:
 		 xsi1 = 1 / sqrt(3);
 		 xsi2 = -1 / sqrt(3);
 		 double detJ = calculateDeterminant(*nodes[2], *nodes[3]);
-		 topMatrix = calculateMatrixInProperSide(eta1, eta2, xsi1, xsi2) * convection * detJ;
+		 matrixHBCLocal += calculateMatrixInProperSide(eta1, eta2, xsi1, xsi2) * convection * detJ;
+		 vectorP += -calculateVectorInProperSide(eta1, eta2, xsi1, xsi2) * convection * temperature * detJ;
 	 }
 	 if ((nodes[3]->getBC()) && (nodes[0]->getBC())) {
 		 eta1 = 1 / sqrt(3);
@@ -65,7 +56,8 @@ private:
 		 xsi1 = -1;
 		 xsi2 = -1;
 		 double detJ = calculateDeterminant(*nodes[3], *nodes[0]);
-		 leftMatrix = calculateMatrixInProperSide(eta1, eta2, xsi1, xsi2) * convection * detJ;
+		 matrixHBCLocal += calculateMatrixInProperSide(eta1, eta2, xsi1, xsi2) * convection * detJ;
+		 vectorP += -calculateVectorInProperSide(eta1, eta2, xsi1, xsi2) * convection * temperature * detJ;
 	 }
  }
  double MatrixHBCandVectorP::calculateDeterminant(Node node1, Node node2) {
@@ -78,6 +70,14 @@ private:
 	 Eigen::Matrix<double, 4, 4> matrix2 = calculateShapeFunction1dInMatrixHBC(eta2, xsi2) * calculateShapeFunction1dInMatrixHBC(eta2, xsi2).transpose();
      return (matrix1 + matrix2);
 }
+
+ Eigen::Vector4d MatrixHBCandVectorP::calculateVectorInProperSide(double eta1, double eta2, double xsi1, double xsi2) {
+
+	 Eigen::Vector4d vector1 = calculateShapeFunction1dInMatrixHBC(eta1, xsi1);
+	 Eigen::Vector4d vector2 = calculateShapeFunction1dInMatrixHBC(eta2, xsi2);
+	 return (vector1 + vector2);
+
+ }
 
  Eigen::Vector4d MatrixHBCandVectorP::calculateShapeFunction1dInMatrixHBC(double eta, double xsi ) {
 	 Eigen::Vector4d ShapeFunction1d;

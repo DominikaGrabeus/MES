@@ -12,7 +12,7 @@ public:
 	array<Node*, 4> nodes;
 	MatrixH_C matrixHLocal;
 	MatrixH_C matrixCLocal;
-	MatrixHBCandVectorP matrixHBCLocal;
+	MatrixHBCandVectorP matrixAndVector;
 	Element();
 	Element(array<Node*, 4> Nodes);
 	void setElementId(int id);
@@ -52,5 +52,5 @@ void Element::setMatrixHAndC(double k, double cp, double ro, array<Node*, 4> nod
 	//matrixCLocal.printMatrixC();
 }
 void Element::setMatrixHBCandVectorP(double convection, double temperature, array<Node*, 4> Nodes) {
-	matrixHBCLocal.calculateMatrixHBCandVectorP(convection, temperature, Nodes);
+	matrixAndVector.calculateMatrixHBCandVectorP(convection, temperature, Nodes);
 }

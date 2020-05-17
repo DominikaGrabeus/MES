@@ -11,38 +11,40 @@
 using namespace std;
 class Grid : public GlobalData {
 public:
-	Eigen::Vector4d tmp;
+	Eigen::VectorXd* vectorPGlobal;
 	Eigen::MatrixXd* matrixHGlobal;
 	Eigen::MatrixXd* matrixCGlobal;
+	Eigen::MatrixXd* matrixHBCGlobal;
+	Eigen::MatrixXd* matrixHWithBCGlobal;
 	vector<Node> nodesList;
 	vector<Element> elementsList;
-	double cp;
-	double ro;
-	double conductivity;
 	Element setNodesInElement(int i, int j, int nH);
-	void createGrid(float height, float width, int nH, int nW, double temperature, double cp, double ro, double conductivity, double convection);
+	void createGrid(float height, float width, int nH, int nW, double initialTemperature,double ambientTemperature, double heat, double density, double conductivity, double alfa, double simulationTime, double stepTime);
 	void createNodesList(float height, float width, int nH, int nW, double temperature);
 	void createElemensList(int nH, int nW);
 	void printGrid();
 	void agregateLocalMatrixToGlobalMatrix(Element element);
 	void printAgregatedMatrixHAndC();
+	void createMatrixHWithBC();
+
 
 };
-void Grid::createGrid(float height, float width, int nH, int nW, double temperature, double cp, double ro, double conductivity,double convection) {
-	this->cp = cp;
-	this->ro = ro;
-	this->conductivity = conductivity;
-	this->GlobalData::setGlobalData(height, width, nH, nW, temperature,convection);
-	this->createNodesList(height, width, nH, nW, temperature);
+void Grid::createGrid(float height, float width, int nH, int nW, double initialTemperature, double ambientTemperature, double heat, double density, double conductivity, double alfa, double simulationTime, double stepTime) {
+	
+	this->GlobalData::setGlobalData(height,  width,  nH,  nW,  initialTemperature, ambientTemperature,  heat,  density, conductivity,  alfa,  simulationTime,  stepTime);
+	this->createNodesList(height, width, nH, nW, initialTemperature);
 	UniversalElement::UniversalElement();
 	matrixHGlobal = new Eigen::MatrixXd(GlobalData::nN, GlobalData::nN);
 	matrixHGlobal->fill(0);
 	matrixCGlobal = new Eigen::MatrixXd(GlobalData::nN, GlobalData::nN);
 	matrixCGlobal->fill(0);
+	matrixHBCGlobal = new Eigen::MatrixXd(GlobalData::nN, GlobalData::nN);
+	matrixHBCGlobal->fill(0);
+	matrixHWithBCGlobal = new Eigen::MatrixXd(GlobalData::nN, GlobalData::nN);
+	matrixHWithBCGlobal ->fill(0);
+	vectorPGlobal = new Eigen::VectorXd(GlobalData::nN );
+	vectorPGlobal->fill(0);
 	this->createElemensList(nH, nW);
-	for (int i = 0; i < 4; i++) {
-		tmp(i) = i;
-	}
 
 
 }
@@ -87,12 +89,10 @@ Element Grid::setNodesInElement(int i, int j, int nH) {
 
 	Element element = nodes;
 	element.elementId;
-	element.setMatrixHAndC(conductivity, cp, ro, nodes);
-	element.setMatrixHBCandVectorP(convection, temperature, nodes);
-	cout << element.matrixHBCLocal.bottomMatrix << endl;
-	cout << element.matrixHBCLocal.rightMatrix << endl;
-	cout << element.matrixHBCLocal.topMatrix << endl;
-	cout << element.matrixHBCLocal.leftMatrix << endl;
+	element.setMatrixHAndC(conductivity, heat, density, nodes);
+	element.setMatrixHBCandVectorP(alfa, ambientTemperature, nodes);
+	//cout << element.matrixAndVector.matrixHBCLocal << endl;
+   // cout << element.matrixAndVector.vectorP << endl;
 	agregateLocalMatrixToGlobalMatrix(element);
 
 
@@ -110,7 +110,10 @@ void Grid::agregateLocalMatrixToGlobalMatrix(Element element) {
 
 			(*matrixHGlobal)(nodesIDs[i] - 1, nodesIDs[j] - 1) += element.matrixHLocal.matrix(i, j);
 			(*matrixCGlobal)(nodesIDs[i] - 1, nodesIDs[j] - 1) += element.matrixCLocal.matrix(i, j);
+			(*matrixHBCGlobal)(nodesIDs[i] - 1, nodesIDs[j] - 1) += element.matrixAndVector.matrixHBCLocal(i, j);
 		}
+
+		(*vectorPGlobal)[nodesIDs[i] - 1] += (element.matrixAndVector.vectorP[i]);
 	}
 
 }
@@ -125,7 +128,15 @@ void Grid::printGrid() {
 void Grid::printAgregatedMatrixHAndC() {
 	cout << *matrixHGlobal << endl;
 	cout << *matrixCGlobal << endl;
+	cout << *matrixHBCGlobal << endl;
+	cout << *vectorPGlobal << endl;
+	cout << *matrixHWithBCGlobal << endl;
 
 }
+
+void Grid::createMatrixHWithBC() {
+	*matrixHWithBCGlobal = *matrixHGlobal + *matrixHBCGlobal;
+}
+
 
 
