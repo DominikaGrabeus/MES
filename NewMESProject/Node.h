@@ -19,6 +19,8 @@ public:
 	float getY();
 	bool getBC();
 	double getDistance(Node node);
+	double getTemperature();
+	void setTemperature(double temperature);
 
 
 private:
@@ -69,4 +71,10 @@ bool Node::getBC() {
 }
 double Node::getDistance(Node node) {
 	return sqrt(pow((node.x) - (this->x), 2) + pow((node.y) - (this->y), 2));
+}
+double Node::getTemperature() {
+	return temperature;
+}
+void Node::setTemperature(double temperature) {
+	this->temperature = temperature;
 }

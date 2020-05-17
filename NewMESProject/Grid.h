@@ -15,24 +15,26 @@ public:
 	Eigen::MatrixXd* matrixHGlobal;
 	Eigen::MatrixXd* matrixCGlobal;
 	Eigen::MatrixXd* matrixHBCGlobal;
-	Eigen::MatrixXd* matrixHWithBCGlobal;
 	vector<Node> nodesList;
 	vector<Element> elementsList;
-	Element setNodesInElement(int i, int j, int nH);
 	void createGrid(float height, float width, int nH, int nW, double initialTemperature,double ambientTemperature, double heat, double density, double conductivity, double alfa, double simulationTime, double stepTime);
-	void createNodesList(float height, float width, int nH, int nW, double temperature);
-	void createElemensList(int nH, int nW);
 	void printGrid();
+	void printAllGlobalMatrix();
+	void calculateEquation();
+private:
+	void createNodesList();
+	void createElemensList();
+	Element setNodesInElement(int i, int j, int nH);
 	void agregateLocalMatrixToGlobalMatrix(Element element);
-	void printAgregatedMatrixHAndC();
-	void createMatrixHWithBC();
+	double getMinTemperature();
+	double getMaxTemperature();
 
 
 };
 void Grid::createGrid(float height, float width, int nH, int nW, double initialTemperature, double ambientTemperature, double heat, double density, double conductivity, double alfa, double simulationTime, double stepTime) {
 	
 	this->GlobalData::setGlobalData(height,  width,  nH,  nW,  initialTemperature, ambientTemperature,  heat,  density, conductivity,  alfa,  simulationTime,  stepTime);
-	this->createNodesList(height, width, nH, nW, initialTemperature);
+	this->createNodesList();
 	UniversalElement::UniversalElement();
 	matrixHGlobal = new Eigen::MatrixXd(GlobalData::nN, GlobalData::nN);
 	matrixHGlobal->fill(0);
@@ -40,36 +42,34 @@ void Grid::createGrid(float height, float width, int nH, int nW, double initialT
 	matrixCGlobal->fill(0);
 	matrixHBCGlobal = new Eigen::MatrixXd(GlobalData::nN, GlobalData::nN);
 	matrixHBCGlobal->fill(0);
-	matrixHWithBCGlobal = new Eigen::MatrixXd(GlobalData::nN, GlobalData::nN);
-	matrixHWithBCGlobal ->fill(0);
 	vectorPGlobal = new Eigen::VectorXd(GlobalData::nN );
 	vectorPGlobal->fill(0);
-	this->createElemensList(nH, nW);
+	this->createElemensList();
 
 
 }
 
-void Grid::createNodesList(float height, float width, int nH, int nW, double temperature) {
-	double deltaX = width / ((double)nW - 1.0);
-	double deltaY = height / ((double)nH - 1.0);
-	for (int i = 0; i < nW; i++) {
-		for (int j = 0; j < nH; j++) {
+void Grid::createNodesList() {
+	double deltaX = GlobalData::width / ((double)GlobalData::nW - 1.0);
+	double deltaY = GlobalData::height / ((double)GlobalData::nH - 1.0);
+	for (int i = 0; i < GlobalData::nW; i++) {
+		for (int j = 0; j < GlobalData::nH; j++) {
 			float x = i * deltaX;
 			float y = j * deltaY;
-			int id = i * nH + j + 1;
+			int id = i * GlobalData::nH + j + 1;
 			bool BC = false;
-			if (x == 0 || x == height || y == 0 || y == width)
+			if (x == 0 || x == GlobalData::height || y == 0 || y == GlobalData::width)
 				BC = true;
-			Node* newNode = new Node(x, y, id, temperature,BC);
+			Node* newNode = new Node(x, y, id, GlobalData::initialTemperature,BC);
 			nodesList.push_back(*newNode);
 		}
 	}
 }
-void Grid::createElemensList(int nH, int nW) {
-	for (int i = 0; i < nW - 1; i++) {
-		for (int j = 0; j < nH - 1; j++) {
-			Element element = setNodesInElement(i, j, nH);
-			int id = i * (nH - 1) + j + 1;
+void Grid::createElemensList() {
+	for (int i = 0; i < GlobalData::nW - 1; i++) {
+		for (int j = 0; j < GlobalData::nH - 1; j++) {
+			Element element = setNodesInElement(i, j, GlobalData::nH);
+			int id = i * (GlobalData::nH - 1) + j + 1;
 			element.setElementId(id);
 			elementsList.push_back(element);
 		}
@@ -78,8 +78,8 @@ void Grid::createElemensList(int nH, int nW) {
 Element Grid::setNodesInElement(int i, int j, int nH) {
 	array<int, 4> nodesId;
 	array<Node*, 4> nodes;
-	nodesId[0] = j + i * nH;
-	nodesId[1] = nodesId[0] + nH;
+	nodesId[0] = j + i * GlobalData::nH;
+	nodesId[1] = nodesId[0] + GlobalData::nH;
 	nodesId[2] = nodesId[1] + 1;
 	nodesId[3] = nodesId[0] + 1;
 	for (int i = 0; i < 4; i++) {
@@ -94,8 +94,6 @@ Element Grid::setNodesInElement(int i, int j, int nH) {
 	//cout << element.matrixAndVector.matrixHBCLocal << endl;
    // cout << element.matrixAndVector.vectorP << endl;
 	agregateLocalMatrixToGlobalMatrix(element);
-
-
 	return element;
 }
 
@@ -115,7 +113,6 @@ void Grid::agregateLocalMatrixToGlobalMatrix(Element element) {
 
 		(*vectorPGlobal)[nodesIDs[i] - 1] += (element.matrixAndVector.vectorP[i]);
 	}
-
 }
 
 void Grid::printGrid() {
@@ -125,18 +122,45 @@ void Grid::printGrid() {
 		elementsList[i].printElement();
 }
 
-void Grid::printAgregatedMatrixHAndC() {
+void Grid::printAllGlobalMatrix() {
 	cout << *matrixHGlobal << endl;
 	cout << *matrixCGlobal << endl;
 	cout << *matrixHBCGlobal << endl;
 	cout << *vectorPGlobal << endl;
-	cout << *matrixHWithBCGlobal << endl;
-
-}
-
-void Grid::createMatrixHWithBC() {
-	*matrixHWithBCGlobal = *matrixHGlobal + *matrixHBCGlobal;
 }
 
 
+void Grid::calculateEquation() {
+	Eigen::MatrixXd A(GlobalData::nN, GlobalData::nN);
+	Eigen::VectorXd B(GlobalData::nN);
+	Eigen::VectorXd t0(GlobalData::nN);
+	Eigen::VectorXd t1(GlobalData::nN);
 
+	for (double i =0 ; i <= simulationTime; i += stepTime) {
+		cout << "Simulation time : " << i << "  Minimum temperature : " << getMinTemperature() << "  Maximum temperature : " << getMaxTemperature() << endl;
+		A = (*matrixHGlobal + *matrixHBCGlobal) + (*matrixCGlobal / GlobalData::stepTime);
+		for (int i = 0; i < GlobalData::nN; i++)
+				t0[i] = nodesList[i].getTemperature();
+		B = (*matrixCGlobal / GlobalData::stepTime) * t0 - *vectorPGlobal;
+		t1 = A.householderQr().solve(B);
+		for (int i = 0; i < GlobalData::nN; i++)
+			nodesList[i].setTemperature(t1[i]);
+	}
+
+}
+
+double Grid::getMinTemperature() {
+	Eigen::VectorXd minVector(GlobalData::nN);
+	for (int i = 0; i < GlobalData::nN; i++)
+		minVector[i] = nodesList[i].getTemperature();
+
+	return minVector.minCoeff();
+}
+
+double Grid::getMaxTemperature() {
+	Eigen::VectorXd maxVector(GlobalData::nN);
+	for (int i = 0; i < GlobalData::nN; i++)
+		maxVector[i] = nodesList[i].getTemperature();
+
+	return maxVector.maxCoeff();
+}

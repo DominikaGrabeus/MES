@@ -16,22 +16,15 @@ public:
 	array<array<double,4>, 4>  derrivativeNbyX;
 	array<array<double, 4>, 4> derrivativeNbyY;
 	array<array<Eigen::Vector2d, 4>, 4> matrixContainingAllShapeFunctionInEveryPoint;
-	Eigen::Matrix4d getMatrixH();
-	Eigen::Matrix4d getMatrixC();
-
-
-
 	void calculateMatrixH(double k, array<Node*, 4> nodes);
 	void calculateMatrixC(double cp, double ro, array<Node*, 4> nodes);
 	void setJacobMatrices(array<Node*, 4> nodes);
 	void printMatrixH();
 	void printMatrixC();
+private:
 	Eigen::Matrix4d getFinalMatrixHInPoint(int i);
 	void calculateNbydXAndbydY();
 	void reverseJacobMatrix();
-
-
-private :
 	Eigen::Matrix4d setMatrixHInPoint(int PointIndex, double k);
 	Eigen::Matrix4d getdNbyNxAnddNbydxTransposedMatrix(int pointIndex);
 	Eigen::Vector4d getdNbydx(int PointIndex);
@@ -42,13 +35,7 @@ private :
 
 
 void MatrixH_C::calculateMatrixH(double k, array<Node*, 4> nodes) {
-	/*
-	for (int i = 0; i < 3; i++)
-	{
-		printShapeFunctions(i);               //0-N, 1-Eta, 2-Xsi
-		cout << endl;
-	}
-	*/
+
 	setJacobMatrices(nodes);
 	reverseJacobMatrix();
 	calculateNbydXAndbydY();
@@ -125,8 +112,6 @@ void MatrixH_C::reverseJacobMatrix() {
 		reversedJacobMatrix[i].jacobMatrix = (1 / jacobMatrices[i].jacobMatrix.determinant()) * jacobMatrices[i].jacobMatrix.transpose();
 }
 
-
-
  void MatrixH_C::calculateNbydXAndbydY()
 {
 	 for (int i = 0; i < 4; i++) {
@@ -137,14 +122,6 @@ void MatrixH_C::reverseJacobMatrix() {
 		 }
 	 }
 }
-
- Eigen::Matrix4d MatrixH_C::getMatrixH() {
-	 return matrix;
- }
-
- Eigen::Matrix4d MatrixH_C::getMatrixC() {
-	 return matrix;
- }
 
  void MatrixH_C::printMatrixH() {
 

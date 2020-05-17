@@ -22,10 +22,6 @@ public:
 	void setMatrixHBCandVectorP(double convection, double temperature, array<Node*, 4> Nodes);
 };
 
-Element::Element() {
-	this->nodes = { 0,0,0,0 };
-}
-
 Element::Element(array<Node*, 4> Nodes) {
 	this->nodes = Nodes;
 }
